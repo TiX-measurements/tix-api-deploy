@@ -1,0 +1,28 @@
+version: "3"
+services:
+  mysql:
+    image: mysql
+    container_name: test-mysql
+    ports:
+      - 6603:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tix
+      MYSQL_USER: tix
+      MYSQL_PASSWORD: tix
+    volumes:
+      - /storage/docker/mysql-datadir:/var/lib/mysql
+      - /storage/docker/sql-dump:/docker-entrypoint-initdb.d
+  tix-api:
+    image: tixmeasurements/tix-api:latest
+    ports:
+      - "3001:3001/tcp"
+    links:
+      - mysql
+    command: ["npm", "run", "start"]
+  tix-iptoas:
+    image: tixmeasurements/iptoas:latest
+    links:
+      - mysql
+    volumes:
+      - /storage/docker/iptoas-datadir:/root/iptoas
